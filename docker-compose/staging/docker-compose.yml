@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  branch-manager:
+    image: ghcr.io/chad3814/postgres-branch-manager:staging-latest
+    container_name: branch-manager-staging
+    restart: unless-stopped
+    ports:
+      - "3002:3001"
+    environment:
+      - NODE_ENV=staging
+      - PORT=3001
+      - DATABASE_URL=${DATABASE_URL}
+      - BRANCH_MANAGEMENT_API_KEY=${BRANCH_MANAGEMENT_API_KEY}
+      - DB_PREFIX=staging_
+    networks:
+      - branch-manager-staging
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Simplified monitoring for staging
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus-staging
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-staging-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=72h'  # Shorter retention for staging
+      - '--web.enable-lifecycle'
+    networks:
+      - branch-manager-staging
+
+networks:
+  branch-manager-staging:
+    driver: bridge
+
+volumes:
+  prometheus-staging-data:

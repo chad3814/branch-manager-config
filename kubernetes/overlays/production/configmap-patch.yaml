@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: branch-manager-config
+data:
+  db-prefix: "prod_"
+  log-level: "warn"
+  max-connections: "20"
+  connection-timeout: "5000"
+  idle-timeout: "60000"

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: branch-manager
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: branch-manager
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DB_PREFIX
+          value: "prod_"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"

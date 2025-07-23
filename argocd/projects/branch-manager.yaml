@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: branch-manager
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: branch-manager
+    app.kubernetes.io/component: project
+spec:
+  description: "PostgreSQL Branch Manager Project"
+  
+  sourceRepos:
+    - 'https://github.com/chad3814/branch-manager-config.git'
+  
+  destinations:
+    - namespace: branch-manager
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+  
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: cert-manager.io
+      kind: ClusterIssuer
+  
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: Service
+    - group: apps
+      kind: Deployment
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: cert-manager.io
+      kind: Certificate
+  
+  roles:
+    - name: admin
+      description: Admin access to branch-manager project
+      policies:
+        - p, proj:branch-manager:admin, applications, *, branch-manager/*, allow
+        - p, proj:branch-manager:admin, repositories, *, *, allow
+      groups:
+        - branch-manager-admins
+    
+    - name: developer
+      description: Developer access to branch-manager project
+      policies:
+        - p, proj:branch-manager:developer, applications, get, branch-manager/*, allow
+        - p, proj:branch-manager:developer, applications, sync, branch-manager/*, allow
+      groups:
+        - branch-manager-developers

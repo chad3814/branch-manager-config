@@ -1,0 +1,14 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'branch-manager-staging'
+    static_configs:
+      - targets: ['branch-manager:3001']
+    metrics_path: '/health'  # Using health endpoint for staging
+    scrape_interval: 60s

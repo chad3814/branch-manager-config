@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: branch-manager-config
+  namespace: branch-manager
+  labels:
+    app: branch-manager
+    app.kubernetes.io/name: branch-manager
+    app.kubernetes.io/component: config
+data:
+  db-prefix: "branch_"
+  log-level: "info"
+  max-connections: "10"
+  connection-timeout: "2000"
+  idle-timeout: "30000"

@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: branch-manager-production
+
+namespace: branch-manager
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - deployment-patch.yaml
+  - configmap-patch.yaml
+  - ingress-patch.yaml
+
+images:
+  - name: ghcr.io/chad3814/postgres-branch-manager
+    newTag: latest
+
+commonLabels:
+  environment: production
+  
+replicas:
+  - name: branch-manager
+    count: 3

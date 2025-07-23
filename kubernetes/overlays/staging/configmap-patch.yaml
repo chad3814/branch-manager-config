@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: branch-manager-config
+data:
+  db-prefix: "staging_"
+  log-level: "debug"
+  max-connections: "5"
+  connection-timeout: "2000"
+  idle-timeout: "30000"

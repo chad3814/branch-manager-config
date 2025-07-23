@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: branch-manager-staging
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: branch-manager
+    app.kubernetes.io/component: application
+    environment: staging
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: branch-manager
+  
+  source:
+    repoURL: https://github.com/chad3814/branch-manager-config.git
+    targetRevision: develop
+    path: kubernetes/overlays/staging
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: branch-manager
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+  
+  revisionHistoryLimit: 5
+  
+  info:
+    - name: 'Environment'
+      value: 'Staging'
+    - name: 'Owner'
+      value: 'Development Team'
